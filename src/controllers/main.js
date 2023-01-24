@@ -18,7 +18,6 @@
 // As a result the token looks like this:
 // "HJGjghvjhGVRy5uy.lskdmcksdl78HJKbd7ced8.kdsjc56jkHBCDT"
 const jwt = require('jsonwebtoken');
-require('dotenv').config();
 const CustomAPIError = require('../errors/custom-error');
 
 const login = async (req, res) => {
@@ -48,30 +47,12 @@ const login = async (req, res) => {
 // this controller is supposed to handle requests to "/dashboard" resource
 // that is a protected one and requires the token
 const dashboard = async (req, res) => {
-  // we extract the "Authorization" header
-  const authHeader = req.headers.authorization;
+  const luckyNumber = Math.floor(Math.random() * 100);
 
-  // check if it's missing OR incorrect (does not start with what we need)
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    throw new CustomAPIError('No token provided', 401);
-  }
-
-  // if we've this far then the header is OK, and we just need to extract the token
-  const token = authHeader.split(' ')[1];
-
-  try {
-    // to decode AND verify the token we use "jwt.verify"
-    const decodedData = jwt.verify(token, process.env.JWT_SECRET);
-    // and after that we just use our usual logic of sending something meaningful back
-    const luckyNumber = Math.floor(Math.random() * 100);
-
-    res.status(200).json({
-      msg: `Hello, ${decodedData.username}`,
-      secret: `Here is your lucky number: ${luckyNumber}`,
-    });
-  } catch (err) {
-    throw new CustomAPIError('Not authorized to access this route', 401);
-  }
+  res.status(200).json({
+    msg: `Hello, ${req.user.username}`,
+    secret: `Here is your lucky number: ${luckyNumber}`,
+  });
 };
 
 module.exports = {
