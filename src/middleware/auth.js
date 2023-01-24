@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const CustomAPIError = require('../errors/custom-error');
+const { UnauthenticatedError } = require('../errors');
 
 const authMiddleware = async (req, res, next) => {
   // we extract the "Authorization" header
@@ -8,7 +8,7 @@ const authMiddleware = async (req, res, next) => {
 
   // check if it's missing OR incorrect (does not start with what we need)
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    throw new CustomAPIError('No token provided', 401);
+    throw new UnauthenticatedError('No token provided');
   }
 
   // if we've this far then the header is OK, and we just need to extract the token
@@ -25,7 +25,7 @@ const authMiddleware = async (req, res, next) => {
     // we can inspect the "req" object and use the newly added "user" prop
     next();
   } catch (err) {
-    throw new CustomAPIError('Not authorized to access this route', 401);
+    throw new UnauthenticatedError('Not authorized to access this route');
   }
 };
 

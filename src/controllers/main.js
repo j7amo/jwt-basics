@@ -18,7 +18,7 @@
 // As a result the token looks like this:
 // "HJGjghvjhGVRy5uy.lskdmcksdl78HJKbd7ced8.kdsjc56jkHBCDT"
 const jwt = require('jsonwebtoken');
-const CustomAPIError = require('../errors/custom-error');
+const { BadRequestError } = require('../errors');
 
 const login = async (req, res) => {
   const { username, password } = req.body;
@@ -27,7 +27,7 @@ const login = async (req, res) => {
   // - Joi (3rd party library)
   // - we can write our own basic validation right here
   if (!username || !password) {
-    throw new CustomAPIError('Please provide email and password', 400);
+    throw new BadRequestError('Please provide email and password');
   }
   // to create the token we use "jwt.sign"
   const token = jwt.sign(
